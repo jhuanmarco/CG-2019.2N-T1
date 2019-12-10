@@ -57,7 +57,7 @@ function createScene() {
     sphere1.position.x -= 0.97;
     sphere1.position.z -= 0.4;
     
-    scene.add(sphere1);
+   
         
 
 
@@ -68,6 +68,7 @@ function createScene() {
         model = gltf.scene;
         scene.add( model );
         model.scale.set(1,1,1);
+        model.add(sphere1);
         
     }, undefined, function ( e ) {
         console.error( e );
@@ -84,7 +85,7 @@ createScene();
 
 function animate() {
     requestAnimationFrame( animate );
-
+    model.position.x += 1;
 
     renderer.render( scene, camera );
 }
