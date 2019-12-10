@@ -13,7 +13,7 @@ var timer, clock;
 function createScene() {   
     // Cena       
     cena = new THREE.Scene();
-    cena.background = new THREE.Color( 0x333333 );
+    cena.background = new THREE.Color( 0x000000 );
 
     // Camera
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -35,15 +35,19 @@ function createScene() {
     controls = new OrbitControls( camera, renderer.domElement );
     
     // Luzes
-    luzAmbiente = new THREE.AmbientLight( 0xaaaaaa ); // soft white light
+    luzAmbiente = new THREE.AmbientLight( 0xffffff ); // soft white light
     cena.add( luzAmbiente );
     
     light = new THREE.HemisphereLight( 0x000000, 0x004400 );
-    light.position.set( 0, 10, 0 );
+    light.position.set( 0, -20, 0 );
     cena.add( light );
 
-    light = new THREE.DirectionalLight( 0xffffff );
-    light.position.set( 0, 20, 10 );
+    light = new THREE.PointLight( 0xffffff );
+    light.position.set( 0, -20, 10 );
+    cena.add( light );
+
+    light = new THREE.PointLight( 0xffffff );
+    light.position.set( 0, 20, 0);
     cena.add( light );
 
 
@@ -51,7 +55,7 @@ function createScene() {
     // Models
     // Meia esfera
     var geometry = new THREE.SphereBufferGeometry(2.99, 50, 50, 0, 2*Math.PI, 0, 0.5 * Math.PI);
-    materialGlass = new THREE.MeshToonMaterial({color: 0x333333, transparent: true, opacity: 1});
+    materialGlass = new THREE.MeshPhongMaterial({color: 0x000000, transparent: true, opacity: 1});
     esfera = new THREE.Mesh(geometry, materialGlass);
     esfera.position.y += 2.3;
     esfera.position.x -= 0.97;
@@ -59,7 +63,7 @@ function createScene() {
 
     // Pokebola
     var loader = new GLTFLoader();
-    loader.load( './Models/pokeball/scene.gltf', function ( gltf ) {
+    loader.load( './Models/pokeball/scene1.gltf', function ( gltf ) {
         modelPokeball = gltf.scene;
         cena.add(modelPokeball);
         modelPokeball.scale.set(1,1,1);
@@ -73,6 +77,13 @@ function createScene() {
         animation.loop = true
         action = mixer.clipAction(animation);
         action.play();
+        
+        gltf.scene.traverse( child => {
+
+            if ( child.material ) child.material.metalness = .9;
+        
+        } );
+
 
     }, undefined, function ( e ) {
         alert(e);
@@ -91,7 +102,7 @@ function animate() {
     console.log(timer);
 
     if(materialGlass.opacity > 0.1){
-        //materialGlass.opacity -= 0.01;
+        materialGlass.opacity -= 0.01;
     }
     
     renderer.render(cena, camera);
