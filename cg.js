@@ -20,6 +20,8 @@ var opacitySpeed = 2*speed;
 var pokemonMoveSpeed = .2*speed;
 var pokemonSpeedVertical = .2*speed;
 
+var modelBandeira;
+var mixerBandeira, actionBandeira;
 
 
 function onKeyDown(event) {
@@ -74,7 +76,19 @@ function onKeyDown(event) {
             modelPokemon.position.y += pokemonSpeedVertical;
         }
 
+       
+
+
     }
+
+
+    if(event.key == 't'){
+        console.log(light.position.y)
+        light.position.y -= pokemonSpeedVertical*500;
+    } else if( event.key == 'y'){
+        light.position.y += pokemonSpeedVertical*500;
+    }
+
 
     if(event.key == ' '){     
         flyStatus = !flyStatus;
@@ -96,10 +110,11 @@ function createScene() {
     cena = new THREE.Scene();
     cena.background = new THREE.Color( 0x000000 );
 
+
     // Camera
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    camera.position.set(3.3719491772700154, 10.845116692994656, 10.328279762236564);
-    camera.lookAt(new THREE.Vector3( -0.2929976693109934, -0.6342807483311333, -0.7154301489836888 ));
+    camera.position.set(2.6065302634881538, 9.458777001424812, 9.074338966644643);
+    camera.lookAt(new THREE.Vector3( -0.29648430068836945, -0.6161579931206986, -0.7296892399911086 ));
     //camera.position.set( x , y , z );
     //camera.lookAt( new THREE.Vector3( x , y, z) );
 
@@ -119,18 +134,16 @@ function createScene() {
     // Luzes
     luzAmbiente = new THREE.AmbientLight( 0xffffff );
     cena.add( luzAmbiente );
-    
-    light = new THREE.HemisphereLight( 0x000000, 0x004400 );
-    light.position.set( 0, -20, 0 );
+
+    light = new THREE.PointLight( 0xffffff );
+    light.position.set( 0, 20, 0);
     cena.add( light );
 
     light = new THREE.PointLight( 0xffffff );
     light.position.set( 0, -20, 10 );
     cena.add( light );
 
-    light = new THREE.PointLight( 0xffffff );
-    light.position.set( 0, 20, 0);
-    cena.add( light );
+   
 
     // Models
     // Meia esfera
@@ -142,6 +155,7 @@ function createScene() {
     esfera.position.y += 2.3;
     esfera.position.x -= 0.97;
     esfera.position.z -= 0.3;
+    esfera.castShadow = true;
 
     // Pokebola
     var loader = new GLTFLoader();
@@ -202,6 +216,34 @@ function createScene() {
 
     document.addEventListener('keydown', onKeyDown, false);
 
+    loader.load( './Models/animated_flag/scene.gltf', function ( gltf ) {
+        modelBandeira = gltf.scene;
+        cena.add(modelBandeira);
+        modelBandeira.position.x = 0.15;
+        modelBandeira.position.y = 1.77;
+        modelBandeira.position.z = 1.1;
+        modelBandeira.scale.set(0.03,0.03,0.03);
+
+        mixerBandeira = new THREE.AnimationMixer(modelBandeira);
+        var animation = gltf.animations[0];
+        animation.loop = true;
+        actionBandeira = mixerBandeira.clipAction(animation);
+        actionBandeira.play();
+
+        gltf.scene.traverse( function( node ) {
+
+            if ( node instanceof THREE.Mesh ) {
+                node.castShadow = true;
+                node.receiveShadow = true;
+             }
+    
+        } );
+        
+
+    }, undefined, function ( e ) {
+        alert(e);
+    } );
+
        
 }
 
@@ -220,21 +262,22 @@ function animate() {
 
     if (mixerPokebola) mixerPokebola.update(delta);
     if (mixerPokemon) mixerPokemon.update(delta);
+    if (mixerBandeira) mixerBandeira.update(delta);
     //console.log(delta)
 
     if(flyStatus) {
         fly();
     }
- 
+
     renderer.render(cena, camera);
 
-    /* Get camera view
+ 
     var vector = new THREE.Vector3();
     camera.getWorldDirection( vector );
     console.log(vector);
     console.log("camera =")
     console.log(camera.position.clone())
-    */
+    
 }
 
 animate();
