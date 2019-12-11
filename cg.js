@@ -4,78 +4,88 @@ import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/GLTFLoader.js';
 
 var camera, cena, renderer, controls;
-var modelPokeball, esfera, materialGlass, modelPokemon;
-var mixer, action, mixer2, action2;
-var luzAmbiente, luzDirecional, light;
+var modelPokebola, esfera, materialEsfera;
+var mixerPokebola, actionPokebola;
+
+var modelPokemon;
+var mixerPokemon, actionPokemon;
+var flyStatus = false;
+
+var luzAmbiente, light;
 var delta, clock; 
-var geometry
-var animateBool = false;
 
-var speed = 1;
-var rotateSpeed = 100*speed;
+var speed = 0.05;
+var rotateSpeed = 50*speed;
 var opacitySpeed = 2*speed;
-var pokemonSpeed = 0.02*speed 
-var pokemonSpeedVertical = 0.01*speed
+var pokemonMoveSpeed = .2*speed;
+var pokemonSpeedVertical = .2*speed;
 
-var animaPokemon = false
+
 
 function onKeyDown(event) {
-
+    //Opacidade
     if (event.key == 'o') {
-        if(materialGlass.opacity > 0) {
-            materialGlass.opacity -= opacitySpeed*delta;
+        if(materialEsfera.opacity > 0) {
+            materialEsfera.opacity -= opacitySpeed;
         }
     } else if(event.key == 'p'){
-        if(materialGlass.opacity < 1) {
-            materialGlass.opacity += opacitySpeed*delta;
+        if(materialEsfera.opacity < 1) {
+            materialEsfera.opacity += opacitySpeed;
         }
     }
 
     if(event.key == 'z'){
-        esfera.rotation.x -= (delta*rotateSpeed) * Math.PI / 180;
+        if(esfera.rotation.x > -0.56) esfera.rotation.x -= (rotateSpeed) * Math.PI / 180;
+
+    } else if(event.key == 'x'){
+        if(esfera.rotation.x < 0)  esfera.rotation.x += (rotateSpeed) * Math.PI / 180;
+
     }
 
-    if(event.key == 'w'){
-        modelPokemon.position.z -= pokemonSpeed*1;
-    } else if( event.key == 'a'){
-        modelPokemon.position.x -= pokemonSpeed*1;
-    }else if( event.key == 's'){
-        modelPokemon.position.z += pokemonSpeed*1;
-    }else if( event.key == 'd'){
-        modelPokemon.position.x += pokemonSpeed*1;
+    // Movimentação
+    if(flyStatus){ //Apenas voando
+        if(event.key == 'w'){
+            modelPokemon.position.z -= pokemonMoveSpeed;
+        } else if( event.key == 'a'){
+            modelPokemon.position.x -= pokemonMoveSpeed;
+        }else if( event.key == 's'){
+            modelPokemon.position.z += pokemonMoveSpeed;
+        }else if( event.key == 'd'){
+            modelPokemon.position.x += pokemonMoveSpeed;
+        }
+
+        // Rotação em X
+        if(event.key == '8'){
+            modelPokemon.rotation.x += rotateSpeed * Math.PI / 180;
+        }else if(event.key == '2'){
+            modelPokemon.rotation.x -= rotateSpeed * Math.PI / 180;
+        }
+
+        if(event.key == '6'){
+            modelPokemon.rotation.y -= rotateSpeed * Math.PI / 180;
+        }else if(event.key == '4'){
+            modelPokemon.rotation.y += rotateSpeed * Math.PI / 180;
+        } 
+
+        // Movimento vertical
+        if(event.key == 'q'){
+            modelPokemon.position.y -= pokemonSpeedVertical;
+        } else if( event.key == 'e'){
+            modelPokemon.position.y += pokemonSpeedVertical;
+        }
+
     }
 
-    if( event.key == '5'){
-        if(animateBool == true){
-            action2.stop();
-            animateBool = false;
+    if(event.key == ' '){     
+        flyStatus = !flyStatus;
+        if(flyStatus){
+            actionPokemon.play();
         } else {
-            action2.play()
-            animateBool = true;
+            actionPokemon.stop();
         }
     }
 
-    if(event.key == '6'){
-        modelPokemon.rotation.y -= (delta*rotateSpeed) * Math.PI / 180;
-    }else if(event.key == '4'){
-        modelPokemon.rotation.y += (delta*rotateSpeed) * Math.PI / 180;
-    }else if(event.key == '8'){
-        modelPokemon.rotation.x += (delta*rotateSpeed) * Math.PI / 180;
-    }else if(event.key == '2'){
-        modelPokemon.rotation.x -= (delta*rotateSpeed) * Math.PI / 180;
-    }
-    
-    if(event.key == 'q'){
-        modelPokemon.position.y -= pokemonSpeedVertical*1;
-    } else if( event.key == 'e'){
-        modelPokemon.position.y += pokemonSpeedVertical*1;
-    }
-
-    if(event.key == 'n'){
-
-        animatePokemon();
-    }
- 
+   
 };
 
 
@@ -84,15 +94,14 @@ function onKeyDown(event) {
 function createScene() {   
     // Cena       
     cena = new THREE.Scene();
-    cena.background = new THREE.Color( 0xffffff );
+    cena.background = new THREE.Color( 0x000000 );
 
     // Camera
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    camera.position.set(3.3719491772700154, 10.845116692994656, 10.328279762236564);
+    camera.lookAt(new THREE.Vector3( -0.2929976693109934, -0.6342807483311333, -0.7154301489836888 ));
     //camera.position.set( x , y , z );
     //camera.lookAt( new THREE.Vector3( x , y, z) );
-    camera.position.z = 15;
-
-    camera.position.set(1.7780375322268238, 4.666367111566359, 4.603324703102395)
 
     // Rederizador
     renderer = new THREE.WebGLRenderer();
@@ -108,7 +117,7 @@ function createScene() {
     controls = new OrbitControls( camera, renderer.domElement );
     
     // Luzes
-    luzAmbiente = new THREE.AmbientLight( 0xffffff ); // soft white light
+    luzAmbiente = new THREE.AmbientLight( 0xffffff );
     cena.add( luzAmbiente );
     
     light = new THREE.HemisphereLight( 0x000000, 0x004400 );
@@ -125,10 +134,10 @@ function createScene() {
 
     // Models
     // Meia esfera
-    geometry = new THREE.SphereBufferGeometry(2.99, 50, 50, 0, 2*Math.PI, 0, 0.5 * Math.PI);
-    materialGlass = new THREE.MeshPhongMaterial({color: 0x000000, transparent: true, opacity: 1});
-    materialGlass.side = THREE.DoubleSide;
-    esfera = new THREE.Mesh(geometry, materialGlass);
+    var geometry = new THREE.SphereBufferGeometry(2.99, 50, 50, 0, 2*Math.PI, 0, 0.5 * Math.PI);
+    materialEsfera = new THREE.MeshPhongMaterial({color: 0x000000, transparent: true, opacity: 1});
+    materialEsfera.side = THREE.DoubleSide;
+    esfera = new THREE.Mesh(geometry, materialEsfera);
 
     esfera.position.y += 2.3;
     esfera.position.x -= 0.97;
@@ -138,23 +147,22 @@ function createScene() {
     var loader = new GLTFLoader();
 
     loader.load( './Models/pokeball/scene.gltf', function ( gltf ) {
-        modelPokeball = gltf.scene;
-        cena.add(modelPokeball);
-        modelPokeball.scale.set(1,1,1);
-        modelPokeball.add(esfera);
+        modelPokebola = gltf.scene;
+        cena.add(modelPokebola);
+        modelPokebola.scale.set(1,1,1);
+        //Add esfera ao objeto
+        modelPokebola.add(esfera);
         
  
         // Animação
-        mixer = new THREE.AnimationMixer(modelPokeball);
+        mixerPokebola = new THREE.AnimationMixer(modelPokebola);
         var animation = gltf.animations[0];
         animation.loop = true
-        action = mixer.clipAction(animation);
-        action.play();
+        actionPokebola = mixerPokebola.clipAction(animation);
+        actionPokebola.play();
         
         gltf.scene.traverse( child => {
-
-            if ( child.material ) child.material.metalness = .9;
-        
+            if ( child.material ) child.material.metalness = 0.9;
         } );
 
         gltf.scene.traverse( function( node ) {
@@ -181,11 +189,10 @@ function createScene() {
         modelPokemon.position.y = 2.62;
         modelPokemon.position.z = 0.46;
 
-        mixer2 = new THREE.AnimationMixer(modelPokemon);
-        console.log(gltf.animations);
+        mixerPokemon = new THREE.AnimationMixer(modelPokemon);
         var animation = gltf.animations[0];
         animation.loop = true
-        action2 = mixer2.clipAction(animation);
+        actionPokemon = mixerPokemon.clipAction(animation);
         
 
     }, undefined, function ( e ) {
@@ -200,7 +207,7 @@ function createScene() {
 
 createScene();
 
-function autoFly(){
+function fly(){
     modelPokemon.position.x += (delta/2)*Math.sin(Date.now() / 240);
     modelPokemon.position.z += (delta/2)*Math.cos(Date.now() / 600);
 }
@@ -209,46 +216,34 @@ function autoFly(){
 function animate() {
     requestAnimationFrame( animate );
     delta = clock.getDelta();
-    if (mixer) mixer.update(delta);
-    if (mixer2) mixer2.update(delta);
+    speed = delta;
+
+    if (mixerPokebola) mixerPokebola.update(delta);
+    if (mixerPokemon) mixerPokemon.update(delta);
     //console.log(delta)
 
-    if(materialGlass.opacity > 0.1){
-        materialGlass.opacity -= 0.01;
+    if(flyStatus) {
+        fly();
     }
-    
-    if(animaPokemon) {
-        if(animateBool == false){
-            action2.play();
-            animateBool = true;
-        }
-        autoFly();
-    }
-    
-
-
-    console.log(modelPokemon.position)
-    
+ 
     renderer.render(cena, camera);
+
+    /* Get camera view
+    var vector = new THREE.Vector3();
+    camera.getWorldDirection( vector );
+    console.log(vector);
+    console.log("camera =")
+    console.log(camera.position.clone())
+    */
 }
 
 animate();
 
 
 /*
-var clock = new THREE.Clock();
-var speed = 2; //units a second
-var delta = 0;
-
-render();
-function render(){
-  requestAnimationFrame(render);
-
-  delta = clock.getDelta();
-  object.position.z += speed * delta;
-
-  renderer.render(scene, camera);
-}
+skin pokemon
+background
+post online
 
 add pokemon
 animations
@@ -257,9 +252,5 @@ animations
 background
 glassmaterial
 
-https://stackoverflow.com/questions/15478093/realistic-lighting-sunlight-with-three-js
-https://github.com/mrdoob/three.js/issues/644
-https://stackoverflow.com/questions/19731471/reflective-material-in-three-js
-https://threejsfundamentals.org/threejs/lessons/threejs-backgrounds.html
-https://jsfiddle.net/diatom/gn4d0j81/7/
+
 */
