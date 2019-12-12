@@ -1,3 +1,17 @@
+/*  Aluno: Jhuan Marco Dondoerfer Zamprogna
+    Componente: Computação Gráfica - 2019/2
+*/
+
+/*
+Modelos utilizados:
+    Pokebola - Por MouradZzz °<° 
+        Disponível em https://sketchfab.com/3d-models/pokemon-pokeball-place-for-seb-8aad93b7f54943529922f5f96faceebc
+    Pokemon Articuno - Por ShawnD
+        Disponível em https://sketchfab.com/3d-models/articuno-maya-rig-free-7331a386cd364a00a632028516f7a456 
+    Bandeira - Por noears6
+        Disponível em https://sketchfab.com/3d-models/animated-flag-3aa23ffa68cb4cbba1acfe983f8f4b4c
+*/
+
 // Imports
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/build/three.module.js';
 import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js';
@@ -100,16 +114,14 @@ function onKeyDown(event) {
     }
 
    
-};
-
+}
 
 
 // Inicial 
 function createScene() {   
     // Cena       
     cena = new THREE.Scene();
-    cena.background = new THREE.Color( 0x000000 );
-
+    cena.background = new THREE.Color( 0x050505 );
 
     // Camera
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -149,6 +161,7 @@ function createScene() {
     // Meia esfera
     var geometry = new THREE.SphereBufferGeometry(2.99, 50, 50, 0, 2*Math.PI, 0, 0.5 * Math.PI);
     materialEsfera = new THREE.MeshPhongMaterial({color: 0x000000, transparent: true, opacity: 1});
+    materialEsfera.metalness = 1;
     materialEsfera.side = THREE.DoubleSide;
     esfera = new THREE.Mesh(geometry, materialEsfera);
 
@@ -188,13 +201,12 @@ function createScene() {
     
         } );
 
-    
-
-
     }, undefined, function ( e ) {
         alert(e);
     } );
 
+
+    // Pokemon
     loader.load( './Models/articuno_maya_rig_free/scene.gltf', function ( gltf ) {
         modelPokemon = gltf.scene;
         cena.add(modelPokemon);
@@ -214,8 +226,7 @@ function createScene() {
     } );
 
 
-    document.addEventListener('keydown', onKeyDown, false);
-
+    // Bandeira
     loader.load( './Models/animated_flag/scene.gltf', function ( gltf ) {
         modelBandeira = gltf.scene;
         cena.add(modelBandeira);
@@ -244,6 +255,8 @@ function createScene() {
         alert(e);
     } );
 
+
+    document.addEventListener('keydown', onKeyDown, false);
        
 }
 
@@ -271,29 +284,13 @@ function animate() {
 
     renderer.render(cena, camera);
 
- 
+    /*
     var vector = new THREE.Vector3();
     camera.getWorldDirection( vector );
     console.log(vector);
     console.log("camera =")
     console.log(camera.position.clone())
-    
+    */
 }
 
 animate();
-
-
-/*
-skin pokemon
-background
-post online
-
-add pokemon
-animations
-    pokemon
-    open pokeball
-background
-glassmaterial
-
-
-*/
