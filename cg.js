@@ -37,6 +37,7 @@ var pokemonSpeedVertical = .2*speed;
 var modelBandeira;
 var mixerBandeira, actionBandeira;
 
+var direction = 1;
 
 function onKeyDown(event) {
     //Opacidade
@@ -61,13 +62,13 @@ function onKeyDown(event) {
     // Movimentação
     if(flyStatus){ //Apenas voando
         if(event.key == 'w'){
-            modelPokemon.position.z -= pokemonMoveSpeed;
+            if(!(modelPokemon.position.z <= -2.50))modelPokemon.position.z -= pokemonMoveSpeed;
         } else if( event.key == 'a'){
-            modelPokemon.position.x -= pokemonMoveSpeed;
+            if(!(modelPokemon.position.x <= -2.50))modelPokemon.position.x -= pokemonMoveSpeed;
         }else if( event.key == 's'){
-            modelPokemon.position.z += pokemonMoveSpeed;
+            if(!(modelPokemon.position.z >= 1.80))modelPokemon.position.z += pokemonMoveSpeed;
         }else if( event.key == 'd'){
-            modelPokemon.position.x += pokemonMoveSpeed;
+            if(!(modelPokemon.position.x >= 0.50))modelPokemon.position.x += pokemonMoveSpeed;
         }
 
         // Rotação em X
@@ -85,9 +86,9 @@ function onKeyDown(event) {
 
         // Movimento vertical
         if(event.key == 'q'){
-            modelPokemon.position.y -= pokemonSpeedVertical;
+            if(!(modelPokemon.position.y <= 1.71))modelPokemon.position.y -= pokemonSpeedVertical;
         } else if( event.key == 'e'){
-            modelPokemon.position.y += pokemonSpeedVertical;
+            if(!(modelPokemon.position.y >= 3.93))modelPokemon.position.y += pokemonSpeedVertical;
         }
 
        
@@ -112,8 +113,7 @@ function onKeyDown(event) {
             actionPokemon.stop();
         }
     }
-
-   
+  
 }
 
 
