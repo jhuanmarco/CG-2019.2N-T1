@@ -16,6 +16,6 @@ Os modelos e animações foram importados do site sketchfab e estão referenciad
 - 8.2.4.6 -  Rotação do Pokémon
 - Z,X     -  Abertura da pokebola (até um limite pré-estabelecido)
 - O,P     -  Opacidade da esfera superior da pokebola
-- Mouse   -  Rotação e zoom da câmera  
+- Mouse   -  Movimentação, rotação e zoom da câmera orbital  
 
 3. O trabalho se encontra disponível em https://jhuanmarco.github.io/CG-2019.2N-T1/
